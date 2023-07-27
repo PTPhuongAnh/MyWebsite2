@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns=http://www.w3.org/1999/xhtml
+	xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
+<title>Book Store</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+	crossorigin="anonymous">
+
+<style>
+body {
+	font-family: sans-serif;
+	background-color: #fecce4;
+}
+
+.file-upload {
+	width: 100%;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.file-upload-btn {
+	width: 100%;
+	margin: 0;
+	border: none;
+	padding: 10px;
+	border-radius: 4px;
+	transition: all .2s ease;
+	outline: none;
+	text-transform: uppercase;
+	font-weight: 700;
+}
+
+.file-upload-btn:active {
+	border: 0;
+	transition: all .2s ease;
+}
+
+.file-upload-btn:hover {
+	cursor: pointer;
+}
+
+.file-upload-content {
+	text-align: center;
+	margin: auto;
+}
+
+.file-upload-input {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	outline: none;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.image-upload-wrap {
+	margin-top: 20px;
+	border: 1px solid black;
+	position: relative;
+}
+
+.drag-text {
+	text-align: center;
+}
+
+.drag-text h3 {
+	font-weight: 100;
+	text-transform: uppercase;
+	padding-bottom: 300px;
+}
+
+.file-upload-image {
+	max-height: 600px;
+	max-width: 500px;
+	border: 1px solid black;
+	transform: scale(.8);
+}
+</style>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg sticky-top navbar-light  " style="background-color:  #72c1dc">
+		<a class="navbar-brand text-white logo"
+			th:href="${session.admin}?'/admin/books':'/admin/home'">
+			<h2 >BookStore</h2>
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div th:if="${session.admin}" class="collapse navbar-collapse"
+			id="navbarSupportedContent">
+			<div class="navbar-nav ml-auto">
+				<a class="nav-link text-white" th:href="@{/admin/logout}"><h5>Logout</h5></a>
+			</div>
+		</div>
+
+		<div th:unless="${session.admin}" class="collapse navbar-collapse"
+			id="navbarSupportedContent">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item login">
+				<a class="nav-link text-white"
+					th:href="@{login}"><h5>Login</h5></a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<form name="addBookForm" th:object="${book}" class="border-success"
+		th:action="'/admin/book/save/'+${bookId}"
+		th:method="${bookId}>0?PUT:POST" enctype="multipart/form-data"
+		onsubmit="event.preventDefault();">
+		<h2 class="text-center my-2 "> Information of book</h2>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-sm-7 col-md-7 col-lg-7">
+					<div th:if="${bookId}>0">
+						<input type="text" name="id" readonly th:value="${book.getId}"
+							style="display: none;">
+					</div>
+					<div class="row mx-auto">
+						<div class="form-group col-md-6 col-sm-6 col-lg-6">
+							<label for="Title">Title<span style="color: red;">
+									* </span></label>
+									 <input type="text" class="form-control" name="title" placeholder="Title" required th:disabled="${bookId}>0" th:value="${book.getTitle}">
+						</div>
+						<div class="form-group col-md-6 col-sm-6 col-lg-6">
+							<label for="Author">Author<span style="color: red;">
+									* </span></label> <input type="text" class="form-control" name="author"
+								placeholder="Author" required th:disabled="${bookId}>0"
+								th:value="${book.getAuthor}">
+						</div>
+					</div>
+					<div class="form-group col-md-12">
+						<label for="Description">Description</label>
+						<textarea class="form-control" rows="5" cols="50"
+							name="description" style="resize: none;"
+							th:disabled="${bookId}>0" th:value="${book.getDescription}"
+							th:text="${book.getDescription}"></textarea>
+					</div>
+					<div class="row mx-auto">
+						<div class="form-group col-md-6 col-sm-6 col-lg-6">
+							<label for="Public">Public<span style="color: red;">
+									* </span></label> <input type="date" class="form-control" name="release"
+								placeholder="Public" required th:disabled="${bookId}>0"
+								th:value="${book.getRelease}">
+						</div>
+						<div class="form-group col-md-6 col-sm-6 col-lg-6">
+							<label for="Pages">Pages</label>
+							 <input type="number"
+								class="form-control" name="pages" placeholder="Pages" min="1"
+								th:disabled="${bookId}>0" th:value="${book.getPages}">
+						</div>
+					</div>
+					<div class="row mx-auto">
+						<div class="form-group col-md-6 col-sm-6 col-lg-6">
+							<label for="Category">Category</label> <select
+								class="form-control" name="category" th:disabled="${bookId}>0">
+								<option disabled th:selected="${bookId}<0">Category</option>
+								<option value="Novel"
+									th:selected="${book.getCategory}=='Novel'">Novel
+								</option>
+								<option value="Detective"
+									th:selected="${book.getCategory}=='Detective'">Detective
+								</option>
+								<option value="Horror"
+									th:selected="${book.getCategory}=='Horror'">Horror</option>
+								<option value="Fantasy"
+									th:selected="${book.getCategory}=='Fantasy'">Fantasy</option>
+									<option value="Science"
+									th:selected="${book.getCategory}=='Science'">Science</option>
+									
+								<option value="Others"
+									th:selected="${book.getCategory}=='Others'">Others</option>
+							</select>
+						</div>
+						<div class="form-group col-md-6 col-sm-6 col-lg-6">
+							<label for="Price">Price</label> <span style="color: red;">
+								* </span> <input type="number" class="form-control" name="price"
+								placeholder="Price" min="1000" th:disabled="${bookId}>0"
+								th:value="${book.getPrice}">
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-5 col-md-5 col-lg-5">
+					<div class="file-upload">
+						<button class="file-upload-btn" type="button"
+							onclick="$('.file-upload-input').trigger( 'click' )"
+							th:disabled="${bookId}>0">Add Image</button>
+
+						<div class="image-upload-wrap"
+							th:style="${bookId}>0?'display: none;':'display: blocck;'">
+							<input class="file-upload-input form-control" type='file'
+								name="imageInput" accept="image/**" th:disabled="${bookId}>0"
+								onchange="readURL(this)">
+							<div class="drag-text">
+								<h3 style="font-family: 'Playfair Display', serif;"
+									class="responsive-content">Image will be here!!</h3>
+							</div>
+						</div>
+						<div class="file-upload-content"
+							th:style="${bookId}<0?'display: none;':'display: flex; justify-content: center;'">
+							<img class="file-upload-image img-fluid"
+								th:src="@{${book.getBookCoverPath}}" alt="Image" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div th:if="${error}" style="margin-left: 30px;">
+			<span style="color: red; font-size: 16px;" th:text="${error}"></span>
+		</div>
+
+		<div style="height: 1px; background: black; width: 100%;"></div>
+
+		<div class="text-right"
+			style="display: flex; margin: 18px 36px 12px 0;">
+			<div class="text-left"
+				style="display: flex; align-items: center; margin-left: 30px; margin-right: auto;">
+				<a th:href="'/admin/books'">Return</a>
+			</div>
+			<div th:if="${bookId}>0" style="margin-left: auto;">
+				<a class="btn btn-warning edit-btn">Edit</a>
+				<button class="btn btn-success save-btn" type="submit"
+					style="display: none;">Save</button>
+			</div>
+			<div th:if="${bookId}<0">
+				<button type="submit" class="btn btn-warning add-book-btn"
+					data-toggle="modal">Add</button>
+			</div>
+
+		</div>
+
+	</form>
+
+	<div class="modal fade" id="addBookModal" tabindex="-1" role="dialog"
+		aria-labelledby="addBookModal" aria-hidden="tre">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="font-size: 16px;">
+					<h5 class="modal-title">Add book</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close" style="display: inline-block;">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>Are you sure to add this new book to the store?</p>
+				</div>
+				<div class="modal-footer">
+					<button id="add-btn" type="button" class="btn btn-success">Confirm</button>
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+        if (document.querySelector(".edit-btn")) {
+            const editBtn = document.querySelector(".edit-btn");
+            const saveBtn = document.querySelector(".save-btn");
+            const formControl = document.querySelectorAll(".form-control");
+            const addImageBtn = document.querySelector(".file-upload-btn");
+            const imageBox = document.querySelector(".file-upload-input");
+
+            editBtn.addEventListener("click", () => {
+                addImageBtn.removeAttribute("disabled");
+                imageBox.removeAttribute("disabled");
+                editBtn.setAttribute("style", "display: none;");
+                saveBtn.removeAttribute("style", "display: none;");
+                saveBtn.setAttribute("style", "font-size: 16px; font-family: 'Playfair Display', serif;");
+                for (let i = 0; i < formControl.length; i++) {
+                    formControl[i].removeAttribute("disabled");
+                }
+            });
+        }
+    </script>
+	<script>
+
+        function readURL(input) {
+            var file = input.files[0]
+
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('.image-upload-wrap').hide();
+                $('.file-upload-image').attr('src', e.target.result);
+                $('.file-upload-content').attr('style', 'display: flex; justify-content: center;');
+            };
+            reader.readAsDataURL(file);
+        }
+
+    </script>
+
+	<script>
+        var addBookForm = document.forms['addBookForm'];
+        var addBookBtn = document.querySelector(".add-book-btn");
+        var confirmBtn = document.getElementById('addBookModal').querySelector("#add-btn");
+        var requiredInput = addBookForm.querySelectorAll("[required]");
+        var pageNumber = addBookForm.querySelector("[name='pages']");
+        var priceInp = addBookForm.querySelector("[name='price']");
+        var saveBtn = document.querySelector(".save-btn");
+        var check;
+
+        setInterval(function () {
+            check = true;
+            for (let i = 0; i < requiredInput.length; i++) {
+                if (requiredInput[i].value === "") {
+                    check = false;
+                    break;
+                }
+            }
+            if (pageNumber.value <= 0) {
+                check = false;
+            }
+            if (priceInp.value < 10000) {
+                check = false;
+            }
+            if (check) {
+                addBookBtn.setAttribute("data-target", "#addBookModal");
+            } else {
+                addBookBtn.removeAttribute("data-target", "#addBookModal");
+            }
+        }, 500)
+
+        confirmBtn.onclick = function () {
+            addBookForm.submit();
+        }
+
+        saveBtn.onclick = function () {
+            addBookForm.submit();
+        }
+    </script>
+
+	<script src="https://code.jquery.com/jquery-3.5.1.js"
+		integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+		crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+		integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+		integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+		integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+		crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html xmlns=http://www.w3.org/1999/xhtml
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Book Store</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://kit.fontawesome.com/279cd13ff5.js"
+	crossorigin="anonymous"></script>
+
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+	integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+	crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+	integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+	integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+	integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+	crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"
+	integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+	crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg sticky-top navbar-light " style="background-color:  #72c1dc">
+		<a class="navbar-brand text-white"
+			th:href="${session.user}?'/user/books':'/user/home'"><h2>BookStore</h2></a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse"
+			data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item" th:if="${session.user}"><a
+					class="nav-link text-white" th:href="@{/user/order}"><h5>Order</h5></a></li>
+				<li class="nav-item" th:if="${session.user}"><a
+					class="nav-link text-white" th:href="@{/user/cart}"><i
+						class="fa-solid fa-cart-shopping"></i><h5>Cart</h5></a></li>
+
+				<li class="nav-item" th:unless="${session.user}"><a
+					class="nav-link text-white" href="/user/login"><h5>Login</h5></a></li>
+
+				<li class="nav-item" th:unless="${session.user}"><a
+					class="nav-link text-white" href="/user/register"><h5>Register</h5></a></li>
+
+				<li class="nav-item" th:if="${session.user}"><a
+					class="nav-link text-white" href="/user/logout"><h5>Logout</h5></a></li>
+			</ul>
+		</div>
+	</nav>
+	<section class="banner_area">
+		<div class="container">
+			<div class="banner_text text-center">
+				<h3> Your Cart</h3>
+			</div>
+		</div>
+	</section>
+
+	<section class="cart_table_area p_100">
+		<div class="container container-fluid">
+			<div class="table-responsive">
+				<table class="table table-bordered">
+					<thead class="table-dark">
+						<tr>
+							<th scope="col" class="text-center">Image</th>
+							<th scope="col" class="text-center">Title</th>
+							<th scope="col" class="text-center">Price</th>
+							<th scope="col" class="text-center">Quantity</th>
+							<th scope="col" class="text-center">Total</th>
+							<th scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${session.cart}"
+							th:each="book : ${session.cart.getBooks}"
+							th:with="quantity=${book.value}">
+							<td><img th:src="@{${book.key.getBookCoverPath}}"
+								style="width: 100px; height: 100px" /></td>
+							<td th:text="${book.key.getTitle}"></td>
+							<td th:text="${#numbers.formatDecimal(book.key.getPrice,3,'POINT',0,'COMMA')}" class="text-center"></td>
+							<td>
+								<div class="spinner mx-auto">
+									
+									<input class="text-center" style="width: 60%;" type="number" th:value="${quantity}" min="1">
+									
+								</div>
+							</td>
+							<td class="text-center" th:text="${#numbers.formatDecimal(book.key.price*quantity,3,'POINT',0,'COMMA')}"></td>
+							<td>
+								<form th:method="DELETE" th:action="@{cart/delete}" th:id="'removeForm-'+${book.key.getId}">
+									<input type="hidden" name="orderId" th:value="${session.cart.getOrder.getId}">
+									<input type="hidden" name="bookId" th:value="${book.key.getId}">
+									<input type="button" class="pest_btn" value="Remove"
+										th:onclick="removeItem([[${book.key.getId}]])">
+									<a th:href="@{/user/book/{bookId}(bookId = ${book.key.getId})}" class=" btn pest_btn"  style="background:green" >Detail</a>
+										
+								</form>
+							</td>
+						</tr>
+						<tr th:unless="${session.cart}">
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td><a class="pest_btn" th:href="@{books}">Add More</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="row cart_total_inner">
+				<div class="col-lg-7"></div>
+				<div class="col-lg-5">
+					<div class="cart_total_text" th:if="${session.cart}">
+						
+						<div class="sub_total">
+							<h5>
+								Sub Total: <span th:text="${#numbers.formatDecimal(session.cart.getTotalPrice,3,'POINT',0,'COMMA')}"></span>
+VNĐ							</h5>
+						</div>
+						<div class="total">
+							<h5>
+								Total: <span th:text="${#numbers.formatDecimal(session.cart.getTotalPrice,3,'POINT',0,'COMMA')}"></span>VNĐ
+							</h5>
+						</div>
+						<div class="cart_footer">
+							<form method="POST" th:action="@{/user/order}">
+								<button type="submit" class="pest_btn">Checkout</button>
+							</form>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<script type="text/javascript" th:inline="javascript">
+		function removeItem(id){
+	        var value = confirm('Are you sure to remove this book out of your cart?');
+	        var removeForm = document.querySelector("#removeForm-" + id);
+	
+	        if(value){
+	            removeForm.submit();
+	        }
+	    }
+	</script>
+</body>
+</html>

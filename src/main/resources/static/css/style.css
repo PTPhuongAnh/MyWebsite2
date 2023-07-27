@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css?family=Lora:400,400i,700|Montserrat:300,400,500,600,700|Open+Sans:300,400,400i,600,600i,700|Playfair+Display:400,400i,700,900|Lato");
+@import url("//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css");
+.pest_btn {
+    background: #72c1dc;
+    color: #fff;
+    line-height: 36px;
+    display: inline-block;
+    padding: 0px 25px;
+    font-family: "Open Sans", sans-serif;
+    position: relative;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 3px;
+    border: none;
+}
+.pink_more {
+	  background: #72c1dc;
+    color: #fff;
+    line-height: 36px;
+    display: inline-block;
+    padding: 0px 25px;
+    font-family: "Open Sans", sans-serif;
+    position: relative;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 3px;
+    border: none;
+}
+
+.rating-container{
+    width: 100px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 2px;
+}
+.rating{
+    position: relative;
+    display: flex;
+    flex-direction: row-reverse;
+    inset: 15px 15px 3px rgba(255,255,255,0.1),
+        -4px -4px 15px rgba(255,255,255,0.1),
+        inset -2px -2px 12px rgba(0,0,0,0.75)
+}
+
+.rating:nth-child(1){
+    transform: translateX();
+}
+
+.rating input{
+    position: relative;
+    margin-right: 20px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px;
+}
+
+.rating input::before{
+    content: '\f005';
+    position: absolute;
+    font-family: fontAwesome;
+    font-size: 20px;
+    color: #ddd;
+    transition: 0.2s;
+}
+
+.rating input:hover ~ input::before,
+.rating input:hover::before,
+.rating input:checked ~ input::before,
+.rating input:checked::before
+{
+    color: var(--c);
+}
+
